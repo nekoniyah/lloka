@@ -43,7 +43,7 @@ export async function buildApp() {
 
   await autoRegister(app, 'plugins/**/*.plugin.{ts,js}')
   await autoRegister(app, 'routes/**/*.routes.{ts,js}')
-  await autoRegister(app, 'routes/**/*.ws.{ts,js}', '/ws')
+await autoRegister(app, 'routes/**/*.ws.{ts,js}', '/ws')
 
   app.setNotFoundHandler((_request, reply) => sendResponse(reply, 404, { error: 'Route not found' }))
   app.setErrorHandler((error: any, _request, reply) => {

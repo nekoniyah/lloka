@@ -14,7 +14,8 @@
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true,
     "noUncheckedSideEffectImports": true,
-    "skipLibCheck": true
+    "skipLibCheck": true,
+    "types": ["node"]
   },
-  "include": [ "src" ]
+  "include": [ "src", "prisma.config.ts" ]
 }
