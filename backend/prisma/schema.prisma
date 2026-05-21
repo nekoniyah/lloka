@@ -6,3 +6,81 @@ generator client {
 datasource db {
   provider = "sqlite"
 }
+
+model User {
+  id           String   @id @default(uuid())
+  username     String   @unique
+  password     String
+  token        String   @unique
+  email        String?
+  avatar       String?
+  online       Boolean  @default(false)
+  tokenVersion Int      @default(1)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  games    Game[]    @relation(name: "usergame")
+  sessions Session[]
+
+  @@index([username])
+  @@index([token])
+}
+
+model Session {
+  id         String   @id @default(uuid())
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId     String
+  token      String   @unique
+  userAgent  String?
+  ipAddress  String?
+  expiresAt  DateTime
+  lastUsedAt DateTime @default(now())
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@index([userId])
+  @@index([expiresAt])
+  @@index([token])
+}
+
+model Game {
+  id            String   @id @default(uuid())
+  owner         User     @relation(name: "usergame", fields: [ownerId], references: [id], onDelete: Cascade)
+  ownerId       String
+  name          String
+  image         String?
+  editorContent String?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  elements GameElement[]
+
+  @@index([ownerId])
+  @@index([name])
+}
+
+model GameElement {
+  id        String   @id @default(uuid())
+  game      Game     @relation(fields: [gameId], references: [id], onDelete: Cascade)
+  gameId    String
+  name      String?
+  imageUrl  String
+  backUrl   String?
+  scale     Float    @default(1)
+  x         Int      @default(0)
+  y         Int      @default(0)
+  zIndex    Int      @default(0)
+  width     Int?
+  height    Int?
+  rotation  Float    @default(0)
+  opacity   Float    @default(1)
+  visible   Boolean  @default(true)
+  locked    Boolean  @default(false)
+  type      String
+  script    String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([gameId])
+  @@index([type])
+}

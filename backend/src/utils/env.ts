@@ -2,9 +2,10 @@ import 'dotenv/config'
 import { z } from 'zod'
 
 const envSchema = z.object({
-  PORT: z.string().optional().default('4000'),
-  HOST: z.string().optional().default('0.0.0.0'),
   NODE_ENV: z.enum(['development', 'production', 'test']).default('development'),
+  HOST: z.string().optional().default('0.0.0.0'),
+  PORT: z.string().optional().default('4000'),
+  COOKIE_SECRET: z.string().min(1, 'COOKIE_SECRET is required'),
 })
 
 const result = envSchema.safeParse(process.env)

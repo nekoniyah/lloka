@@ -1,7 +1,4 @@
 import fastify from 'fastify'
-import cors from '@fastify/cors'
-import helmet from '@fastify/helmet'
-import websocket from '@fastify/websocket'
 import path from 'path'
 import { fileURLToPath, pathToFileURL } from 'url'
 import fg from 'fast-glob'
@@ -36,10 +33,6 @@ export async function buildApp() {
       } : undefined,
     },
   })
-
-  app.register(cors, { origin: true })
-  app.register(helmet)
-  app.register(websocket)
 
   await autoRegister(app, 'plugins/**/*.plugin.{ts,js}')
   await autoRegister(app, 'routes/**/*.routes.{ts,js}')
