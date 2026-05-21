@@ -4,7 +4,7 @@ generator client {
 }
 
 model User {
-  id        Int      @id @default(autoincrement())
+  id        String      @id @default(uuid())
   username  String   @unique
   password  String
   token     String
@@ -15,9 +15,9 @@ model User {
 }
 
 model GameElement {
-  id   Int  @id @default(autoincrement())
+  id   String  @id @default(uuid())
   game Game @relation(fields: [gameId], references: [id])
-  gameId Int
+  gameId String
   imageUrl String
   backUrl String
   scale Float
@@ -28,9 +28,9 @@ model GameElement {
 }
 
 model Game {
-  id       Int           @id @default(autoincrement())
+  id       String  @id @default(uuid())
   owner    User          @relation(name: "usergame", fields: [ownerId], references: [id])
-  ownerId  Int
+  ownerId  String
   name     String
   elements GameElement[]
 }
