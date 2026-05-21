@@ -3,6 +3,38 @@ generator client {
   output   = "../src/prisma"
 }
 
+model User {
+  id        String      @id @default(uuid())
+  username  String   @unique
+  password  String
+  token     String
+  email     String
+  createdAt DateTime @default(now())
+  online    Boolean  @default(false)
+  games     Game[]   @relation(name: "usergame")
+}
+
+model GameElement {
+  id   String  @id @default(uuid())
+  game Game @relation(fields: [gameId], references: [id])
+  gameId String
+  imageUrl String
+  backUrl String
+  scale Float
+  x Int
+  y Int
+  type String
+  script String
+}
+
+model Game {
+  id       String  @id @default(uuid())
+  owner    User          @relation(name: "usergame", fields: [ownerId], references: [id])
+  ownerId  String
+  name     String
+  elements GameElement[]
+}
+
 datasource db {
   provider = "sqlite"
 }
