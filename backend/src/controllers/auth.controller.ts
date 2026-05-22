@@ -36,6 +36,15 @@ export async function registerUserHandler(
     remember: request.body.remember,
   })!;
 
+  await request.server.database.user.update({
+    where: {
+      id: user.id,
+    },
+    data: {
+      token: nextToken,
+    },
+  });
+
   await reply.status(201).send({
     user: {
       id: user.id,
@@ -82,6 +91,15 @@ export async function loginUserHandler(
     remember: request.body.remember,
   })!;
 
+  await request.server.database.user.update({
+    where: {
+      id: user.id,
+    },
+    data: {
+      token: nextToken,
+    },
+  });
+
   await reply.status(200).send({
     user: {
       id: user.id,
@@ -89,4 +107,111 @@ export async function loginUserHandler(
       token: nextToken,
     },
   });
+}
+
+async function requirePassword(
+  request: FastifyRequest,
+  reply: FastifyReply,
+  password?: string,
+): Promise<boolean> {
+  if (!password) {
+    await reply.status(400).send({
+      error: "Current password is required to change password",
+    });
+    return false;
+  }
+
+  const user = await request.session?.require()!;
+  const fullUser = (await request.server.database.user.findUnique({
+    where: {
+      id: user.id,
+    },
+  }))!;
+
+  const isPasswordValid = bcrypt.compareSync(password, fullUser.password);
+
+  if (!isPasswordValid) {
+    await reply.status(401).send({
+      error: "Invalid current password",
+    });
+
+    return false;
+  }
+
+  return true;
+}
+
+export async function updateUserHandler(
+  request: FastifyRequest<{
+    Body: {
+      username?: string;
+      password?: string;
+      currentPassword?: string;
+      email?: string;
+    };
+  }>,
+  reply: FastifyReply,
+) {
+  const user = await request.session?.require()!;
+  let newToken: string | null = null;
+
+  if (request.body.password) {
+    const isPasswordValid = await requirePassword(
+      request,
+      reply,
+      request.body.currentPassword,
+    );
+
+    if (!isPasswordValid) return;
+
+    // Updates password and creates a new token;
+
+    const { token } = (await request.session?.rotate())!;
+
+    const hashedPassword = bcrypt.hashSync(request.body.password, 10);
+
+    await request.server.database.user.update({
+      where: {
+        id: user.id,
+      },
+      data: {
+        password: hashedPassword,
+        token,
+      },
+    });
+
+    newToken = token;
+  }
+
+  if (request.body.username) {
+    await request.server.database.user.update({
+      where: {
+        id: user.id,
+      },
+      data: {
+        username: request.body.username,
+      },
+    });
+  }
+
+  if (request.body.email) {
+    const isPasswordValid = await requirePassword(
+      request,
+      reply,
+      request.body.currentPassword,
+    );
+
+    if (!isPasswordValid) return;
+
+    await request.server.database.user.update({
+      where: {
+        id: user.id,
+      },
+      data: {
+        email: request.body.email,
+      },
+    });
+  }
+
+  await reply.send({ message: "ok", token: newToken });
 }
