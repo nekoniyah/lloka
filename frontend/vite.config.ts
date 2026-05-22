@@ -23,8 +23,10 @@ tailwindcss(), obfuscator({
 	resolve: {
 		alias: {
 			'@components': path.resolve(__dirname, './src/components'),
+      '@contexts': path.resolve(__dirname, './src/contexts'),
 			'@hooks': path.resolve(__dirname, './src/hooks'),
-			'@lib': path.resolve(__dirname, './src/lib/')
+			'@lib': path.resolve(__dirname, './src/lib/'),
+      '@pages': path.resolve(__dirname, './src/pages/'),
 		}
 	},
   build: {
