@@ -55,6 +55,7 @@ model Game {
   createdAt     DateTime      @default(now())
   updatedAt     DateTime      @updatedAt
   gameElements  GameElement[]
+  public        Boolean       @default(false)
 
   @@index([ownerId])
   @@index([name])
