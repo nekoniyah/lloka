@@ -1,10 +1,27 @@
 import React from 'react'
+import { AuthProvider } from '@contexts/auth'
+import { SidebarProvider, SidebarTrigger } from '@components/ui/sidebar'
+import { Sidebar } from '@components/sidebar'
+import { Route, Routes } from 'react-router-dom'
+
+import HomePage from '@pages/home'
+import LoginPage from '@pages/login'
+import NotFoundPage from '@pages/not-found'
 
 export function App(): React.ReactElement {
   return (
-    <div className='flex h-screen w-screen items-center justify-center flex-col gap-2'>
-      <h1 className='text-2xl font-bold text-foreground'>This page is still a work in progress.</h1>
-      <time className='text-xs text-muted-foreground' dateTime='2026-05-22T02:11:00Z'>It is late right now, so I will work on it tomorrow.</time>
-    </div>
+    <AuthProvider>
+      <SidebarProvider>
+        <SidebarTrigger />
+        <Sidebar />
+        <main className='flex-1 p-4'>
+          <Routes>
+            <Route path='/' element={<HomePage />} />
+            <Route path='/login' element={<LoginPage />} />
+            <Route path='*' element={<NotFoundPage />} />
+          </Routes>
+        </main>
+      </SidebarProvider>
+    </AuthProvider>
   )
 }
