@@ -1,3 +1,4 @@
-node_modules/
-**/src/prisma/
+node_modules
+**/src/prisma
+backend/src/prisma
 **/.env
